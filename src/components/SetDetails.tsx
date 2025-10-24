@@ -8,11 +8,13 @@ type SetDetailsProps = {
   completed: boolean;
   restTime: number;
   showRestTimer: boolean;
+  isPending: boolean;
   onWeightChange: (weight: number) => void;
   onDurationChange: (duration: number) => void;
   onToggleComplete: () => void;
   onRestTimeChange: (time: number) => void;
   onDismissRestTimer: () => void;
+  onRestTimerComplete: () => void;
 };
 
 export function SetDetails({
@@ -22,17 +24,21 @@ export function SetDetails({
   completed,
   restTime,
   showRestTimer,
+  isPending,
   onWeightChange,
   onDurationChange,
   onToggleComplete,
   onRestTimeChange,
   onDismissRestTimer,
+  onRestTimerComplete,
 }: SetDetailsProps) {
   return (
     <div className="px-4">
       <div className={`backdrop-blur-sm rounded-2xl p-4 transition-all duration-300 ${
-        completed 
-          ? 'bg-teal-900/40 border border-teal-500/30' 
+          completed
+          ? 'bg-[#017afd]' 
+          : isPending
+          ? 'bg-[#1d213e]'
           : 'bg-[#1d213e]'
       }`}>
         <div className="flex items-center justify-between mb-1">
@@ -52,17 +58,19 @@ export function SetDetails({
             onRestTimeChange={onRestTimeChange}
             isActive={showRestTimer}
             onDismiss={onDismissRestTimer}
+            onRestTimerComplete={onRestTimerComplete}
           />
         ) : (
-          <div className={`rounded-3xl p-4 flex items-center justify-between gap-4 transition-all duration-300 ${
+          <div className={`rounded-2xl p-4 flex items-center justify-between gap-4 transition-all duration-300 ${
             completed 
-              ? 'bg-teal-600/60' 
+              ? 'bg-[#02bcd5]' 
               : 'bg-[#6d6ec0]'
           }`}>
             <button
               className={`flex-1 rounded-2xl py-4 px-4 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
                 completed 
-                  ? 'bg-teal-700/60 hover:bg-teal-700/80' 
+                  ? 'bg-[#02bcd5] border border-white-400' 
+                
                   : 'bg-indigo-600/60 hover:bg-indigo-600/80'
               }`}
               onClick={() => onWeightChange(weight + 2.5)}
@@ -76,12 +84,16 @@ export function SetDetails({
               onClick={onToggleComplete}
               className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${
                 completed
-                  ? 'bg-[#]'
+                  ? 'bg-[#02bcd5] border border-white-400'
+                  : isPending
+                  ? 'bg-blue-500/80'
                   : 'bg-indigo-800/60'
               }`}
             >
               {completed ? (
                 <Check className="w-10 h-10 text-white" strokeWidth={3} />
+              ) : isPending ? (
+                <Play className="w-10 h-10 text-white" strokeWidth={3} />
               ) : (
                 <Play className="w-10 h-10 text-white/40" strokeWidth={3} />
               )}
@@ -90,7 +102,7 @@ export function SetDetails({
             <button
               className={`flex-1 rounded-2xl py-4 px-4 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
                 completed 
-                  ? 'bg-teal-700/60 hover:bg-teal-700/80' 
+                  ? 'bg-[#02bcd5] border border-white-400' 
                   : 'bg-indigo-600/60 hover:bg-indigo-600/80'
               }`}
               onClick={() => onDurationChange(duration + 5)}
@@ -105,7 +117,3 @@ export function SetDetails({
     </div>
   );
 }
-
-
-
-{/*When the rest timer is going create a pending state when the rest time is finished thats a complete state, during pending state only change Set selector icon to play and make it sligjtly blue/*}

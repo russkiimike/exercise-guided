@@ -25,7 +25,7 @@ export function NavigationFooter({ totalDuration, onBack }: NavigationFooterProp
       </div>
 
       <button className="w-16 h-16 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center shadow-lg">
-        <BlobCharacter size={28} />
+        <BlobCharacter size="100vw" />
       </button>
     </footer>
   );

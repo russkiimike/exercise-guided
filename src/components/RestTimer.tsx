@@ -6,9 +6,10 @@ type RestTimerProps = {
   onRestTimeChange: (time: number) => void;
   isActive: boolean;
   onDismiss: () => void;
+  onRestTimerComplete: () => void;
 };
 
-export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss }: RestTimerProps) {
+export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onRestTimerComplete }: RestTimerProps) {
   const [timeLeft, setTimeLeft] = useState(restTime);
   const [animationProgress, setAnimationProgress] = useState(0);
   const animationRef = useRef<number>();
@@ -35,9 +36,9 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss }: R
       if (progress >= 1) {
         // Animation complete - finish the timer
         setTimeLeft(0);
-        // Auto-dismiss the timer when it reaches 0
+        // Trigger pending state when timer completes
         setTimeout(() => {
-          onDismiss();
+          onRestTimerComplete();
         }, 100); // Small delay to ensure smooth transition
         return;
       }
@@ -80,7 +81,7 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss }: R
   const gradientColors = getGradientColors();
 
   return (
-    <div className="px-6">
+    <div className="">
       <div 
         className="rounded-3xl p-6 relative overflow-hidden"
         style={{

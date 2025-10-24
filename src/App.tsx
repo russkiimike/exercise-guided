@@ -12,6 +12,7 @@ function App() {
   const [currentSet, setCurrentSet] = useState(1);
   const [completedSets, setCompletedSets] = useState<Set<number>>(new Set());
   const [showRestTimer, setShowRestTimer] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,33 +48,59 @@ function App() {
   const handleSetChange = (setNumber: number) => {
     setCurrentSet(setNumber);
     setShowRestTimer(false);
+    setIsPending(false);
   };
 
   const handleToggleComplete = () => {
     if (!currentSetData) return;
 
-    const newCompleted = !currentSetData.completed;
-    const updatedSets = sets.map((s) =>
-      s.set_number === currentSet
-        ? { ...s, completed: newCompleted }
-        : s
-    );
+    // If set is already completed, reset it to not completed
+    if (currentSetData.completed) {
+      const updatedSets = sets.map((s) =>
+        s.set_number === currentSet
+          ? { ...s, completed: false }
+          : s
+      );
 
-    setSets(updatedSets);
-    updateSet(currentSetData.id, { completed: newCompleted });
-
-    if (newCompleted) {
-      setCompletedSets((prev) => new Set([...prev, currentSet]));
-      setShowRestTimer(true);
-    } else {
+      setSets(updatedSets);
+      updateSet(currentSetData.id, { completed: false });
       setCompletedSets((prev) => {
         const newSet = new Set(prev);
         newSet.delete(currentSet);
         return newSet;
       });
-      // Reset rest timer state when uncompleting a set
       setShowRestTimer(false);
+      setIsPending(false);
+      return;
     }
+
+    // If we're in pending state, complete the set
+    if (isPending) {
+      const updatedSets = sets.map((s) =>
+        s.set_number === currentSet
+          ? { ...s, completed: true }
+          : s
+      );
+
+      setSets(updatedSets);
+      updateSet(currentSetData.id, { completed: true });
+      setCompletedSets((prev) => new Set([...prev, currentSet]));
+      setIsPending(false);
+      setShowRestTimer(false);
+      return;
+    }
+
+    // Start the set (pending state + timer)
+    const updatedSets = sets.map((s) =>
+      s.set_number === currentSet
+        ? { ...s, completed: false }
+        : s
+    );
+
+    setSets(updatedSets);
+    updateSet(currentSetData.id, { completed: false });
+    setShowRestTimer(true);
+    setIsPending(true);
   };
 
   const handleWeightChange = (weight: number) => {
@@ -107,7 +134,37 @@ function App() {
   };
 
   const handleDismissRestTimer = () => {
+    if (!currentSetData) return;
+    
+    // X button pressed - mark set as complete
+    const updatedSets = sets.map((s) =>
+      s.set_number === currentSet
+        ? { ...s, completed: true }
+        : s
+    );
+
+    setSets(updatedSets);
+    updateSet(currentSetData.id, { completed: true });
+    setCompletedSets((prev) => new Set([...prev, currentSet]));
     setShowRestTimer(false);
+    setIsPending(false);
+  };
+
+  const handleRestTimerComplete = () => {
+    if (!currentSetData) return;
+    
+    // Timer completed - mark set as complete
+    const updatedSets = sets.map((s) =>
+      s.set_number === currentSet
+        ? { ...s, completed: true }
+        : s
+    );
+
+    setSets(updatedSets);
+    updateSet(currentSetData.id, { completed: true });
+    setCompletedSets((prev) => new Set([...prev, currentSet]));
+    setShowRestTimer(false);
+    setIsPending(false);
   };
 
   const handleNewExercise = () => {
@@ -120,6 +177,7 @@ function App() {
       setCurrentSet(1);
       setCompletedSets(new Set());
       setShowRestTimer(false);
+      setIsPending(false);
       
       // Load sets for the new exercise
       const newSets = getExerciseSets(newExercise.id);
@@ -167,6 +225,7 @@ function App() {
             totalSets={4}
             completedSets={completedSets}
             onSetChange={handleSetChange}
+            isPending={isPending}
           />
 
           {currentSetData && (
@@ -178,11 +237,13 @@ function App() {
               completed={currentSetData.completed}
               restTime={currentSetData.rest_time_seconds}
               showRestTimer={showRestTimer}
+              isPending={isPending}
               onWeightChange={handleWeightChange}
               onDurationChange={handleDurationChange}
               onToggleComplete={handleToggleComplete}
               onRestTimeChange={handleRestTimeChange}
               onDismissRestTimer={handleDismissRestTimer}
+              onRestTimerComplete={handleRestTimerComplete}
             />
           )}
         </div>
