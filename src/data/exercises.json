@@ -6,7 +6,7 @@
       "description": "A challenging core exercise that targets the obliques and improves rotational stability. Start in a forearm side plank position, then rotate your torso and reach your top arm under your body.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Forearm-Side-Plank-Twists.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Forearm-Side-Plank-Twists.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -16,7 +16,7 @@
       "description": "A dynamic core exercise that targets the entire core while improving stability and coordination. Start in a plank position and walk laterally while maintaining proper form.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Lateral-Plank-Walks.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Lateral-Plank-Walks.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -26,7 +26,7 @@
       "description": "An explosive core exercise that targets the entire core and improves power. Start in a plank position and hop your feet in and out while maintaining proper form.",
       "category": "core",
       "difficulty_level": "advanced",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Plank-Hops.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Plank-Hops.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -36,7 +36,7 @@
       "description": "A full-body exercise that combines core strength with explosive leg power. Start in a plank position, then jump your feet to your hands and perform a jump squat.",
       "category": "full_body",
       "difficulty_level": "advanced",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Plank-To-Jump-Squat.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Plank-To-Jump-Squat.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -46,7 +46,7 @@
       "description": "A compound exercise that targets the chest, shoulders, and core. Start in a plank position and perform pushups while maintaining proper form.",
       "category": "upper_body",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Plank-To-Pushups.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Plank-To-Pushups.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -56,7 +56,7 @@
       "description": "A core exercise that targets the entire core and improves stability. Start in a plank position and alternate between forearm plank and high plank.",
       "category": "core",
       "difficulty_level": "beginner",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Plank-Ups.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Plank-Ups.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -66,7 +66,7 @@
       "description": "A core exercise that targets the entire core and improves stability. Start in a plank position and reach one arm out in front while maintaining proper form.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Plank-With-Reach-Out.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Plank-With-Reach-Out.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -76,7 +76,7 @@
       "description": "A core exercise that targets the obliques and improves rotational stability. Start in a plank position and rotate your torso to form a T-shape.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Plank-With-T-Rotations.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Plank-With-T-Rotations.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -86,7 +86,7 @@
       "description": "A fundamental core exercise that targets the entire core and improves stability. Start in a plank position and hold while maintaining proper form.",
       "category": "core",
       "difficulty_level": "beginner",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Plank.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Plank.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -96,7 +96,7 @@
       "description": "A core exercise that targets the posterior core and improves stability. Start in a reverse plank position and hold while maintaining proper form.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Reverse-Plank.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Reverse-Plank.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -106,7 +106,7 @@
       "description": "A core exercise that targets the obliques and latissimus dorsi. Start in a side plank position and perform lat pull movements.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Side-Plank-Lat-Pull.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Side-Plank-Lat-Pull.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -116,7 +116,7 @@
       "description": "A core exercise that targets the obliques and improves stability. Start in a side plank position and pull your leg up while maintaining proper form.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Side-Plank-Leg-Pull.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Side-Plank-Leg-Pull.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -126,7 +126,7 @@
       "description": "A dynamic core exercise that targets the obliques and improves rotational stability. Start in a side plank position and perform rotations with kicks.",
       "category": "core",
       "difficulty_level": "advanced",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Side-Plank-Rotation-With-Kicks.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Side-Plank-Rotation-With-Kicks.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -136,7 +136,7 @@
       "description": "A challenging core exercise that targets the obliques, shoulders, and improves stability. Start in a side plank position, then lift your top leg and reach your top arm overhead to create a star shape.",
       "category": "core",
       "difficulty_level": "advanced",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Side-Plank-Star.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Side-Plank-Star.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -146,7 +146,7 @@
       "description": "A dynamic core exercise that targets the entire core and improves stability. Start in a plank position and perform star-shaped movements.",
       "category": "core",
       "difficulty_level": "advanced",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Star-Planks.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Star-Planks.mp4",
       "media_type": "video",
       "duration_seconds": 45
     },
@@ -156,7 +156,7 @@
       "description": "A dynamic core exercise that targets the entire core and improves cardiovascular fitness. Start in a plank position and perform jumping jack movements with your legs.",
       "category": "core",
       "difficulty_level": "intermediate",
-      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/Straight-Arm-Plank-Jacks.mp4",
+      "media_url": "https://dacg2ej81dyxw.cloudfront.net/Assets/Exercise-Renders/background/Straight-Arm-Plank-Jacks.mp4",
       "media_type": "video",
       "duration_seconds": 45
     }
