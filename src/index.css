@@ -1,3 +1,6 @@
+/* Import video transparency styles */
+@import './styles/video-transparency.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

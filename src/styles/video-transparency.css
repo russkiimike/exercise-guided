@@ -1,0 +1,85 @@
+/* WebM Video Transparency Support */
+
+/* Ensure video elements maintain transparency */
+video {
+  background-color: transparent !important;
+  background: transparent !important;
+  mix-blend-mode: normal;
+  isolation: isolate;
+}
+
+/* WebM specific transparency preservation */
+video[src*=".webm"] {
+  background-color: transparent !important;
+  background: transparent !important;
+  mix-blend-mode: normal;
+  isolation: isolate;
+}
+
+/* Video container transparency */
+.video-container {
+  background-color: transparent;
+  background: transparent;
+  mix-blend-mode: normal;
+  isolation: isolate;
+}
+
+/* Ensure proper rendering context for transparent videos */
+.video-transparent {
+  background-color: transparent !important;
+  background: transparent !important;
+  mix-blend-mode: normal;
+  isolation: isolate;
+  position: relative;
+}
+
+/* WebM codec support detection */
+@supports (background: transparent) {
+  video[src*=".webm"] {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+}
+
+/* Cross-browser transparency support */
+video::-webkit-media-controls {
+  background-color: transparent;
+}
+
+video::-webkit-media-controls-panel {
+  background-color: transparent;
+}
+
+/* Ensure video elements don't have background fallbacks */
+video:not([poster]) {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* Mobile-specific transparency preservation */
+@media (max-width: 768px) {
+  video {
+    background-color: transparent !important;
+    background: transparent !important;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+  }
+}
+
+/* PWA fullscreen mode transparency */
+@media (display-mode: fullscreen) {
+  video {
+    background-color: transparent !important;
+    background: transparent !important;
+    mix-blend-mode: normal;
+    isolation: isolate;
+  }
+}
+
+/* Dark mode transparency preservation */
+@media (prefers-color-scheme: dark) {
+  video {
+    background-color: transparent !important;
+    background: transparent !important;
+  }
+}
