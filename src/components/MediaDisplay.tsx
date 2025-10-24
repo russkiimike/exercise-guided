@@ -7,7 +7,7 @@ type MediaDisplayProps = {
 export function MediaDisplay({ mediaUrl, mediaType, exerciseName }: MediaDisplayProps) {
   return (
     <div className="flex flex-col items-center gap-6 px-6">
-      <div className="relative w-60 h-60">
+      <div className="relative w-52 h-52">
         <div className="absolute inset-0 rounded-full border-2 border-white opacity-25"></div>
 
         <div className="absolute inset-4 rounded-full overflow-hidden backdrop-blur-sm flex items-center justify-center">

@@ -1,14 +1,25 @@
 import { ChevronLeft } from 'lucide-react';
 import { BlobCharacter } from './BlobCharacter';
+import { useState, useEffect } from 'react';
 
 type NavigationFooterProps = {
-  totalDuration: number;
+  totalDuration: number; // Keep for backward compatibility but not used
   onBack: () => void;
 };
 
-export function NavigationFooter({ totalDuration, onBack }: NavigationFooterProps) {
-  const minutes = Math.floor(totalDuration / 60);
-  const seconds = totalDuration % 60;
+export function NavigationFooter({ onBack }: NavigationFooterProps) {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const minutes = currentTime.getMinutes();
+  const seconds = currentTime.getSeconds();
   const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
   return (
@@ -24,9 +35,10 @@ export function NavigationFooter({ totalDuration, onBack }: NavigationFooterProp
         <span className="text-white text-2xl font-bold tracking-wide">{timeDisplay}s</span>
       </div>
 
-      <button className="w-16 h-16 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center shadow-lg">
-        <BlobCharacter size="100vw" />
-      </button>
+        <button className="w-20 h-20 rounded-full bg-blue-500 transition-colors flex items-center justify-center shadow-lg">
+        <BlobCharacter size="100vw" eyePosition={{ y: 60, spacing: 20, size: 12,   pupilSize: 8}} />
+        </button>
+        
     </footer>
   );
 }

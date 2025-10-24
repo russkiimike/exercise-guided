@@ -10,12 +10,12 @@ type SetSelectorProps = {
 
 export function SetSelector({ currentSet, totalSets, completedSets, onSetChange, isPending }: SetSelectorProps) {
   return (
-    <div className="flex items-center gap-3 px-6">
+    <div className="flex items-center gap-3 px-4">
       {Array.from({ length: totalSets }, (_, i) => i + 1).map((setNum) => (
         <button
           key={setNum}
           onClick={() => onSetChange(setNum)}
-          className={`flex-1 h-12 rounded-2xl font-semibold text-lg transition-all ${
+          className={`flex-1 h-10 rounded-2xl font-semibold text-lg transition-all ${
             completedSets.has(setNum)
               ? 'bg-[#02bcd5] text-white'
               : currentSet === setNum && isPending

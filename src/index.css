@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* PWA Background Color Fix for iOS */
+html, body {
+  background-color: #2d2e67 !important;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  background-color: #2d2e67;
+  min-height: 100vh;
+}
+
+/* iOS PWA specific fixes */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    background-color: #2d2e67 !important;
+    -webkit-background-size: cover;
+    background-size: cover;
+  }
+}

@@ -1,4 +1,4 @@
-import { Check, Play } from 'lucide-react';
+import { Check, Play, Timer } from 'lucide-react';
 import { RestTimer } from './RestTimer';
 
 type SetDetailsProps = {
@@ -34,7 +34,7 @@ export function SetDetails({
 }: SetDetailsProps) {
   return (
     <div className="px-4">
-      <div className={`backdrop-blur-sm rounded-2xl p-4 transition-all duration-300 ${
+      <div className={`backdrop-blur-sm rounded-2xl py-1 transition-all duration-300 ${
           completed
           ? 'bg-[#017afd]' 
           : isPending
@@ -42,12 +42,12 @@ export function SetDetails({
           : 'bg-[#1d213e]'
       }`}>
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-white text-lg font-semibold">Set {setNumber}</h3>
+          <h3 className="text-white px-2 text-lg font-semibold">Set {setNumber}</h3>
           <button className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors">
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <circle cx="10" cy="5" r="1.5" />
-              <circle cx="10" cy="10" r="1.5" />
-              <circle cx="10" cy="15" r="1.5" />
+              <circle cx="10" cy="5" r="2" />
+              <circle cx="10" cy="10" r="2" />
+              <circle cx="10" cy="15" r="2" />
             </svg>
           </button>
         </div>
@@ -61,23 +61,23 @@ export function SetDetails({
             onRestTimerComplete={onRestTimerComplete}
           />
         ) : (
-          <div className={`rounded-2xl p-4 flex items-center justify-between gap-4 transition-all duration-300 ${
+          <div className={`rounded-2xl py-6 px-2 flex items-center justify-between gap-2 transition-all duration-300 ${
             completed 
               ? 'bg-[#02bcd5]' 
               : 'bg-[#6d6ec0]'
           }`}>
             <button
-              className={`flex-1 rounded-2xl py-4 px-4 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
+              className={`flex-1 rounded-3xl py-1 px-2 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
                 completed 
                   ? 'bg-[#02bcd5] border border-white-400' 
                 
-                  : 'bg-indigo-600/60 hover:bg-indigo-600/80'
+                  : 'bg-indigo-200/60 hover:bg-indigo-600/80'
               }`}
               onClick={() => onWeightChange(weight + 2.5)}
             >
-              <span className="text-white/70 text-sm font-medium">Added Weight</span>
-              <span className="text-white text-2xl font-bold">{weight > 0 ? weight : '0'}</span>
-              <span className="text-white/70 text-xs font-medium">KG</span>
+              <span className="text-white text-sm font-small">Added Weight</span>
+              <span className={`${
+                completed ? 'text-white' : 'text-black'} text-sm font-bold`}>{weight > 0 ? weight : '0'} KG</span>
             </button>
 
             <button
@@ -87,7 +87,7 @@ export function SetDetails({
                   ? 'bg-[#02bcd5] border border-white-400'
                   : isPending
                   ? 'bg-blue-500/80'
-                  : 'bg-indigo-800/60'
+                  : 'bg-indigo-200/60'
               }`}
             >
               {completed ? (
@@ -95,25 +95,35 @@ export function SetDetails({
               ) : isPending ? (
                 <Play className="w-10 h-10 text-white" strokeWidth={3} />
               ) : (
-                <Play className="w-10 h-10 text-white/40" strokeWidth={3} />
+                <Play className="w-10 h-10" fill="currentColor" strokeWidth={1} stroke="white"/>
               )}
             </button>
 
             <button
-              className={`flex-1 rounded-2xl py-4 px-4 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
+              className={`flex-1 rounded-3xl py-1 px-2 flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
                 completed 
                   ? 'bg-[#02bcd5] border border-white-400' 
-                  : 'bg-indigo-600/60 hover:bg-indigo-600/80'
+                  : 'bg-indigo-200/60 hover:bg-indigo-600/80'
               }`}
               onClick={() => onDurationChange(duration + 5)}
             >
-              <span className="text-white/70 text-sm font-medium">Time</span>
-              <span className="text-white text-2xl font-bold">{duration}</span>
-              <span className="text-white/70 text-xs font-medium">s</span>
+              <span className="text-white text-sm font-medium">Time</span>
+              <span className={`${
+                completed ? 'text-white' : 'text-black'}  text-sm font-bold`}>{duration}s</span>
             </button>
+            
           </div>
         )}
+        <div className="flex items-center justify-between p-2 mb-1">
+          <div className="flex items-center">
+          <Timer className="w-4 h-4 text-white" />
+          <h3 className="text-white text-lg font-semibold">Rest time</h3>
+          </div>
+          <span className="text-white text-m font-medium">1min</span>
+         
+        </div>
       </div>
+      
     </div>
   );
 }

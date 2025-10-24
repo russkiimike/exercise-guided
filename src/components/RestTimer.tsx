@@ -12,8 +12,8 @@ type RestTimerProps = {
 export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onRestTimerComplete }: RestTimerProps) {
   const [timeLeft, setTimeLeft] = useState(restTime);
   const [animationProgress, setAnimationProgress] = useState(0);
-  const animationRef = useRef<number>();
-  const startTimeRef = useRef<number>();
+  const startSecondRef = useRef<number>();
+  const intervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     setTimeLeft(restTime);
@@ -23,41 +23,62 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
   useEffect(() => {
     if (!isActive) return;
 
-    startTimeRef.current = Date.now();
+    // Get current time and calculate when to start the timer
+    const now = new Date();
+    const currentMillisecond = now.getMilliseconds();
     
-    const animate = () => {
-      if (!startTimeRef.current) return;
+    // Start the timer at the next second boundary for perfect sync
+    const delayToNextSecond = 1000 - currentMillisecond;
+    
+    const startTimer = () => {
+      startSecondRef.current = now.getSeconds();
       
-      const elapsed = Date.now() - startTimeRef.current;
-      const progress = Math.min(elapsed / (restTime * 1000), 1);
-      
-      setAnimationProgress(progress);
-      
-      if (progress >= 1) {
-        // Animation complete - finish the timer
-        setTimeLeft(0);
-        // Trigger pending state when timer completes
-        setTimeout(() => {
+      const updateTimer = () => {
+        const currentTime = new Date();
+        const currentSecond = currentTime.getSeconds();
+        
+        // Calculate elapsed seconds since start
+        let elapsedSeconds = 0;
+        if (startSecondRef.current !== undefined) {
+          if (currentSecond >= startSecondRef.current) {
+            elapsedSeconds = currentSecond - startSecondRef.current;
+          } else {
+            // Handle minute rollover
+            elapsedSeconds = (60 - startSecondRef.current) + currentSecond;
+          }
+        }
+        
+        const remainingTime = Math.max(0, restTime - elapsedSeconds);
+        const progress = Math.min(elapsedSeconds / restTime, 1);
+        
+        setTimeLeft(remainingTime);
+        setAnimationProgress(progress);
+        
+        if (remainingTime <= 0) {
+          // Timer completed
+          setTimeLeft(0);
           onRestTimerComplete();
-        }, 100); // Small delay to ensure smooth transition
-        return;
-      }
+          return;
+        }
+      };
       
-      // Update time left based on progress
-      const remainingTime = Math.ceil(restTime * (1 - progress));
-      setTimeLeft(remainingTime);
+      // Update immediately
+      updateTimer();
       
-      animationRef.current = requestAnimationFrame(animate);
+      // Set up interval to update every second
+      intervalRef.current = setInterval(updateTimer, 1000);
     };
     
-    animationRef.current = requestAnimationFrame(animate);
+    // Start timer at the next second boundary
+    const timeoutId = setTimeout(startTimer, delayToNextSecond);
     
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+      clearTimeout(timeoutId);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, restTime]);
+  }, [isActive, restTime, onRestTimerComplete]);
 
   const progressPercentage = (timeLeft / restTime) * 100;
 
