@@ -5,6 +5,7 @@ import { MediaDisplay } from './components/MediaDisplay';
 import { SetSelector } from './components/SetSelector';
 import { SetDetails } from './components/SetDetails';
 import { NavigationFooter } from './components/NavigationFooter';
+import { registerServiceWorker, PWAInstallButton, FullscreenToggleButton } from './utils/pwa';
 
 function App() {
   const [exercise, setExercise] = useState<Exercise | null>(null);
@@ -17,6 +18,8 @@ function App() {
 
   useEffect(() => {
     loadExerciseData();
+    // Register service worker for PWA
+    registerServiceWorker();
   }, []);
 
   function loadExerciseData() {
@@ -253,6 +256,10 @@ function App() {
           onBack={() => console.log('Back clicked')}
         />
       </div>
+      
+      {/* PWA Controls */}
+      <PWAInstallButton />
+      <FullscreenToggleButton />
     </div>
   );
 }
