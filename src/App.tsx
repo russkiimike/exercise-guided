@@ -5,7 +5,9 @@ import { MediaDisplay } from './components/MediaDisplay';
 import { SetSelector } from './components/SetSelector';
 import { SetDetails } from './components/SetDetails';
 import { NavigationFooter } from './components/NavigationFooter';
-import { registerServiceWorker, PWAInstallButton, FullscreenToggleButton } from './utils/pwa';
+import { registerServiceWorker } from './utils/pwa';
+import { PWAInstallButton } from './components/PWAInstallButton';
+import { FullscreenToggleButton } from './components/FullscreenToggleButton';
 
 function App() {
   const [exercise, setExercise] = useState<Exercise | null>(null);

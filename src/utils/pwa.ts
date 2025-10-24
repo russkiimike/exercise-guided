@@ -61,35 +61,4 @@ export const usePWAInstall = () => {
   return { installPWA, isInstallable };
 };
 
-// PWA Install Button Component
-export const PWAInstallButton: React.FC = () => {
-  const { installPWA, isInstallable } = usePWAInstall();
-
-  if (!isInstallable) return null;
-
-  return (
-    <button
-      onClick={installPWA}
-      className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg transition-colors z-50"
-    >
-      Install App
-    </button>
-  );
-};
-
-// Fullscreen Toggle Button Component
-export const FullscreenToggleButton: React.FC = () => {
-  const { isFullscreen, toggleFullscreen, isSupported } = useFullscreen();
-
-  if (!isSupported) return null;
-
-  return (
-    <button
-      onClick={toggleFullscreen}
-      className="fixed bottom-4 left-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg transition-colors z-50"
-    >
-      {isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-    </button>
-  );
-};
 

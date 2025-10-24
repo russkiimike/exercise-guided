@@ -1,8 +1,12 @@
 // Simple script to create placeholder icons for PWA
 // In a real project, you would use a proper icon generator or design tool
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const iconSizes = [
   { size: 16, name: 'favicon-16x16.png' },
