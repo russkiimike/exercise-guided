@@ -10,16 +10,18 @@ type RestTimerProps = {
 };
 
 export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onRestTimerComplete }: RestTimerProps) {
-  const [timeLeft, setTimeLeft] = useState(restTime);
+  // Ensure restTime is at least 15 seconds
+  const safeRestTime = Math.max(restTime || 15, 15);
+  const [timeLeft, setTimeLeft] = useState(safeRestTime);
   const [animationProgress, setAnimationProgress] = useState(0);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const startSecondRef = useRef<number>();
   const intervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    setTimeLeft(restTime);
+    setTimeLeft(safeRestTime);
     setAnimationProgress(0);
-  }, [restTime]);
+  }, [safeRestTime]);
 
   // Handle slide-in animation when timer becomes active
   useEffect(() => {
@@ -59,8 +61,8 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
           }
         }
         
-        const remainingTime = Math.max(0, restTime - elapsedSeconds);
-        const progress = Math.min(elapsedSeconds / restTime, 1);
+        const remainingTime = Math.max(0, safeRestTime - elapsedSeconds);
+        const progress = Math.min(elapsedSeconds / safeRestTime, 1);
         
         setTimeLeft(remainingTime);
         setAnimationProgress(progress);
@@ -93,9 +95,9 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
         clearInterval(intervalRef.current);
       }
     };
-  }, [isActive, restTime, onRestTimerComplete]);
+  }, [isActive, safeRestTime, onRestTimerComplete]);
 
-  const progressPercentage = (timeLeft / restTime) * 100;
+  const progressPercentage = (timeLeft / safeRestTime) * 100;
 
   // Calculate gradient colors based on smooth animation progress
   const getGradientColors = () => {
@@ -141,14 +143,14 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => onRestTimeChange(Math.max(0, restTime - 15))}
+              onClick={() => onRestTimeChange(Math.max(15, safeRestTime - 15))}
               className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center backdrop-blur-sm"
             >
               <span className="text-white text-lg font-bold">-15s</span>
             </button>
 
             <button
-              onClick={() => onRestTimeChange(restTime + 15)}
+              onClick={() => onRestTimeChange(safeRestTime + 15)}
               className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center backdrop-blur-sm"
             >
               <span className="text-white text-lg font-bold">+15s</span>

@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import audioData from '../data/audio.json';
 
 interface BlobCharacterProps {
   /** Custom size in pixels or CSS units (e.g., 100, "2rem", "50px") */
@@ -85,18 +84,7 @@ export const BlobCharacter: React.FC<BlobCharacterProps> = ({
     return '';
   };
 
-  const playRandomAudio = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * audioData.audioUrls.length);
-    const audioUrl = audioData.audioUrls[randomIndex];
-    
-    const audio = new Audio(audioUrl);
-    audio.volume = 0.5; // Set volume to 50%
-    
-    audio.play().catch((error) => {
-      console.warn('Audio playback failed:', error);
-      // Fallback: try a different audio URL or show a message
-    });
-    
+  const handleClick = useCallback(() => {
     // Call the onClick prop if provided
     if (onClick) {
       onClick();
@@ -109,7 +97,7 @@ export const BlobCharacter: React.FC<BlobCharacterProps> = ({
       height={getResponsiveSize()}
       viewBox="0 0 100 100"
       className={`cursor-pointer transition-opacity ${getSizeClasses()} ${className}`}
-      onClick={playRandomAudio}
+      onClick={handleClick}
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* Main body - large blue circle */}

@@ -5,9 +5,10 @@ import { useState, useEffect } from 'react';
 type NavigationFooterProps = {
   totalDuration: number; // Keep for backward compatibility but not used
   onBack: () => void;
+  onSoundSelection: () => void;
 };
 
-export function NavigationFooter({ onBack }: NavigationFooterProps) {
+export function NavigationFooter({ onBack, onSoundSelection }: NavigationFooterProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -35,7 +36,10 @@ export function NavigationFooter({ onBack }: NavigationFooterProps) {
         <span className="text-white text-2xl font-bold tracking-wide">{timeDisplay}s</span>
       </div>
 
-        <button className="w-20 h-20 rounded-full bg-blue-500 transition-colors flex items-center justify-center shadow-lg">
+        <button 
+          className="w-20 h-20 rounded-full bg-blue-500 transition-colors flex items-center justify-center shadow-lg"
+          onClick={onSoundSelection}
+        >
         <BlobCharacter size="100vw" eyePosition={{ y: 60, spacing: 20, rx: 15, ry: 5, pupilRx: 10, pupilRy: 6}} />
         </button>
         

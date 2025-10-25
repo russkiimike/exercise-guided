@@ -8,6 +8,7 @@ import { NavigationFooter } from './components/NavigationFooter';
 import { registerServiceWorker } from './utils/pwa';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { FullscreenToggleButton } from './components/FullscreenToggleButton';
+import audioData from './data/audio.json';
 
 function App() {
   const [exercise, setExercise] = useState<Exercise | null>(null);
@@ -17,6 +18,7 @@ function App() {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
 
   useEffect(() => {
     loadExerciseData();
@@ -34,9 +36,14 @@ function App() {
         const setsData = getExerciseSets(exerciseData.id);
         
         if (setsData && setsData.length > 0) {
-          setSets(setsData);
+          // Ensure all sets have proper rest time
+          const normalizedSets = setsData.map(s => ({
+            ...s,
+            rest_time_seconds: s.rest_time_seconds || 15
+          }));
+          setSets(normalizedSets);
           const completed = new Set(
-            setsData.filter((s) => s.completed).map((s) => s.set_number)
+            normalizedSets.filter((s) => s.completed).map((s) => s.set_number)
           );
           setCompletedSets(completed);
         }
@@ -63,12 +70,12 @@ function App() {
     if (currentSetData.completed) {
       const updatedSets = sets.map((s) =>
         s.set_number === currentSet
-          ? { ...s, completed: false }
+          ? { ...s, completed: false, rest_time_seconds: 15 }
           : s
       );
 
       setSets(updatedSets);
-      updateSet(currentSetData.id, { completed: false });
+      updateSet(currentSetData.id, { completed: false, rest_time_seconds: 15 });
       setCompletedSets((prev) => {
         const newSet = new Set(prev);
         newSet.delete(currentSet);
@@ -98,12 +105,12 @@ function App() {
     // Start the set (pending state + timer)
     const updatedSets = sets.map((s) =>
       s.set_number === currentSet
-        ? { ...s, completed: false }
+        ? { ...s, completed: false, rest_time_seconds: s.rest_time_seconds || 15 }
         : s
     );
 
     setSets(updatedSets);
-    updateSet(currentSetData.id, { completed: false });
+    updateSet(currentSetData.id, { completed: false, rest_time_seconds: currentSetData.rest_time_seconds || 15 });
     setShowRestTimer(true);
     setIsPending(true);
   };
@@ -141,6 +148,9 @@ function App() {
   const handleDismissRestTimer = () => {
     if (!currentSetData) return;
     
+    // Play selected sound when timer is dismissed
+    playSelectedSound();
+    
     // X button pressed - mark set as complete
     const updatedSets = sets.map((s) =>
       s.set_number === currentSet
@@ -157,6 +167,9 @@ function App() {
 
   const handleRestTimerComplete = () => {
     if (!currentSetData) return;
+    
+    // Play selected sound when timer completes
+    playSelectedSound();
     
     // Timer completed - mark set as complete
     const updatedSets = sets.map((s) =>
@@ -186,11 +199,37 @@ function App() {
       
       // Load sets for the new exercise
       const newSets = getExerciseSets(newExercise.id);
-      setSets(newSets);
-      console.log('Exercise updated, new sets:', newSets.length);
+      // Ensure all sets have proper rest time
+      const normalizedSets = newSets.map(s => ({
+        ...s,
+        rest_time_seconds: s.rest_time_seconds || 15
+      }));
+      setSets(normalizedSets);
+      console.log('Exercise updated, new sets:', normalizedSets.length);
     } else {
       console.log('No new exercise found');
     }
+  };
+
+  const handleSoundSelection = () => {
+    // Cycle through available sounds
+    const nextIndex = (selectedSoundIndex + 1) % audioData.audioUrls.length;
+    setSelectedSoundIndex(nextIndex);
+    
+    // Play the selected sound
+    const audio = new Audio(audioData.audioUrls[nextIndex]);
+    audio.volume = 0.5;
+    audio.play().catch((error) => {
+      console.warn('Audio playback failed:', error);
+    });
+  };
+
+  const playSelectedSound = () => {
+    const audio = new Audio(audioData.audioUrls[selectedSoundIndex]);
+    audio.volume = 0.5;
+    audio.play().catch((error) => {
+      console.warn('Audio playback failed:', error);
+    });
   };
 
   const totalDuration = sets.reduce((acc, set) => acc + set.duration_seconds, 0);
@@ -256,6 +295,7 @@ function App() {
         <NavigationFooter
           totalDuration={totalDuration}
           onBack={() => console.log('Back clicked')}
+          onSoundSelection={handleSoundSelection}
         />
       </div>
       
