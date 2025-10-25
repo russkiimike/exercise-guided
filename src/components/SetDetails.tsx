@@ -114,14 +114,15 @@ export function SetDetails({
             
           </div>
         )}
-        <div className="flex items-center justify-between p-2 mb-1">
-          <div className="flex items-center">
-          <Timer className="w-4 h-4 text-white" />
-          <h3 className="text-white text-lg font-semibold">Rest time</h3>
+        
+       
+          <div className="flex items-center justify-between p-2 mb-1">
+            <div className="flex items-center">
+              <Timer className="w-4 h-4 text-white" />
+              <h3 className="text-white text-lg font-semibold">Rest time</h3>
+            </div>
+            <span className="text-white text-m font-medium">1min</span>
           </div>
-          <span className="text-white text-m font-medium">1min</span>
-         
-        </div>
       </div>
       
     </div>

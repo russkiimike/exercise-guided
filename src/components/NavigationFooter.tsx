@@ -36,7 +36,7 @@ export function NavigationFooter({ onBack }: NavigationFooterProps) {
       </div>
 
         <button className="w-20 h-20 rounded-full bg-blue-500 transition-colors flex items-center justify-center shadow-lg">
-        <BlobCharacter size="100vw" eyePosition={{ y: 60, spacing: 20, size: 12,   pupilSize: 8}} />
+        <BlobCharacter size="100vw" eyePosition={{ y: 60, spacing: 20, rx: 15, ry: 5, pupilRx: 10, pupilRy: 6}} />
         </button>
         
     </footer>

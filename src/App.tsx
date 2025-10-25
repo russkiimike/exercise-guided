@@ -216,7 +216,7 @@ function App() {
       <ExerciseHeader onNewExercise={handleNewExercise} />
 
       <div className="flex-1 flex flex-col justify-between pb-6">
-        <div className="space-y-8">
+        <div className="space-y-4">
           <MediaDisplay
             key={exercise.id}
             mediaUrl={exercise.media_url}

@@ -21,10 +21,14 @@ interface BlobCharacterProps {
     y?: number;
     /** Horizontal spacing between eyes (0-50, 25 = default) */
     spacing?: number;
-    /** Eye size (0-20, 10 = default) */
-    size?: number;
-    /** Pupil size (0-10, 6 = default) */
-    pupilSize?: number;
+    /** Eye horizontal radius (0-20, 8 = default) */
+    rx?: number;
+    /** Eye vertical radius (0-20, 8 = default) - smaller = more closed */
+    ry?: number;
+    /** Pupil horizontal radius (0-10, 4 = default) */
+    pupilRx?: number;
+    /** Pupil vertical radius (0-10, 4 = default) - smaller = more closed */
+    pupilRy?: number;
   };
 }
 
@@ -51,8 +55,10 @@ export const BlobCharacter: React.FC<BlobCharacterProps> = ({
   // Eye positioning with defaults
   const eyeY = eyePosition.y ?? 45;
   const eyeSpacing = eyePosition.spacing ?? 25;
-  const eyeSize = eyePosition.size ?? 8;
-  const pupilSize = eyePosition.pupilSize ?? 4;
+  const eyeRx = eyePosition.rx ?? 8;
+  const eyeRy = eyePosition.ry ?? 8;
+  const pupilRx = eyePosition.pupilRx ?? 4;
+  const pupilRy = eyePosition.pupilRy ?? 4;
   
   // Calculate eye positions
   const leftEyeX = 50 - eyeSpacing;
@@ -115,38 +121,42 @@ export const BlobCharacter: React.FC<BlobCharacterProps> = ({
         stroke="none"
       />
       
-      {/* Left eye - white circle */}
-      <circle
+      {/* Left eye - white ellipse */}
+      <ellipse
         cx={leftEyeX}
         cy={eyeY}
-        r={eyeSize}
+        rx={eyeRx}
+        ry={eyeRy}
         fill="white"
         stroke="none"
       />
       
-      {/* Left pupil - black circle */}
-      <circle
+      {/* Left pupil - black ellipse */}
+      <ellipse
         cx={leftEyeX}
         cy={eyeY}
-        r={pupilSize}
+        rx={pupilRx}
+        ry={pupilRy}
         fill="black"
         stroke="none"
       />
       
-      {/* Right eye - white circle */}
-      <circle
+      {/* Right eye - white ellipse */}
+      <ellipse
         cx={rightEyeX}
         cy={eyeY}
-        r={eyeSize}
+        rx={eyeRx}
+        ry={eyeRy}
         fill="white"
         stroke="none"
       />
       
-      {/* Right pupil - black circle */}
-      <circle
+      {/* Right pupil - black ellipse */}
+      <ellipse
         cx={rightEyeX}
         cy={eyeY}
-        r={pupilSize}
+        rx={pupilRx}
+        ry={pupilRy}
         fill="black"
         stroke="none"
       />

@@ -12,6 +12,7 @@ type RestTimerProps = {
 export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onRestTimerComplete }: RestTimerProps) {
   const [timeLeft, setTimeLeft] = useState(restTime);
   const [animationProgress, setAnimationProgress] = useState(0);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const startSecondRef = useRef<number>();
   const intervalRef = useRef<NodeJS.Timeout>();
 
@@ -19,6 +20,16 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
     setTimeLeft(restTime);
     setAnimationProgress(0);
   }, [restTime]);
+
+  // Handle slide-in animation when timer becomes active
+  useEffect(() => {
+    if (isActive) {
+      setIsAnimatingOut(false);
+    } else {
+      // Reset animation states when not active
+      setIsAnimatingOut(false);
+    }
+  }, [isActive]);
 
   useEffect(() => {
     if (!isActive) return;
@@ -55,9 +66,13 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
         setAnimationProgress(progress);
         
         if (remainingTime <= 0) {
-          // Timer completed
+          // Timer completed - start slide-out animation
           setTimeLeft(0);
-          onRestTimerComplete();
+          setIsAnimatingOut(true);
+          // Call completion handler after animation
+          setTimeout(() => {
+            onRestTimerComplete();
+          }, 300);
           return;
         }
       };
@@ -102,7 +117,11 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
   const gradientColors = getGradientColors();
 
   return (
-    <div className="">
+    <div className={`transform transition-all duration-300 ease-out ${
+      isAnimatingOut 
+        ? '-translate-x-full opacity-0' 
+        : 'translate-x-0 opacity-100'
+    }`}>
       <div 
         className="rounded-3xl p-6 relative overflow-hidden"
         style={{
@@ -116,7 +135,7 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
 
         <div className="flex items-center justify-between relative z-10">
           <div>
-            <p className="text-white/80 text-sm font-medium mb-1">Time</p>
+            <p className="text-white/80 text-sm font-medium mb-1">Set Time</p>
             <p className="text-white text-3xl font-bold">{timeLeft}s</p>
           </div>
 
@@ -136,7 +155,12 @@ export function RestTimer({ restTime, onRestTimeChange, isActive, onDismiss, onR
             </button>
 
             <button
-              onClick={onDismiss}
+              onClick={() => {
+                setIsAnimatingOut(true);
+                setTimeout(() => {
+                  onDismiss();
+                }, 300);
+              }}
               className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 transition-colors flex items-center justify-center"
             >
               <X className="w-6 h-6 text-white" strokeWidth={3} />
