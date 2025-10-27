@@ -19,6 +19,9 @@ function App() {
   const [isPending, setIsPending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [showAudioHint, setShowAudioHint] = useState(false);
 
   useEffect(() => {
     loadExerciseData();
@@ -63,7 +66,7 @@ function App() {
     setIsPending(false);
   };
 
-  const handleToggleComplete = () => {
+  const handleToggleComplete = async () => {
     if (!currentSetData) return;
 
     // If set is already completed, reset it to not completed
@@ -102,7 +105,9 @@ function App() {
       return;
     }
 
-    // Start the set (pending state + timer)
+    // Start the set (pending state + timer) and enable audio context
+    await enableAudioContext();
+    
     const updatedSets = sets.map((s) =>
       s.set_number === currentSet
         ? { ...s, completed: false, rest_time_seconds: s.rest_time_seconds || 15 }
@@ -145,11 +150,11 @@ function App() {
     updateSet(currentSetData.id, { rest_time_seconds: restTime });
   };
 
-  const handleDismissRestTimer = () => {
+  const handleDismissRestTimer = async () => {
     if (!currentSetData) return;
     
     // Play selected sound when timer is dismissed
-    playSelectedSound();
+    await playSelectedSound();
     
     // X button pressed - mark set as complete
     const updatedSets = sets.map((s) =>
@@ -165,11 +170,11 @@ function App() {
     setIsPending(false);
   };
 
-  const handleRestTimerComplete = () => {
+  const handleRestTimerComplete = async () => {
     if (!currentSetData) return;
     
     // Play selected sound when timer completes
-    playSelectedSound();
+    await playSelectedSound();
     
     // Timer completed - mark set as complete
     const updatedSets = sets.map((s) =>
@@ -211,25 +216,63 @@ function App() {
     }
   };
 
-  const handleSoundSelection = () => {
+  const enableAudioContext = async () => {
+    if (!audioContext) {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setAudioContext(ctx);
+      
+      // Resume context if suspended (required for Safari)
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+    }
+    setAudioEnabled(true);
+    setShowAudioHint(false);
+  };
+
+  const handleSoundSelection = async () => {
+    // Enable audio context on first user interaction
+    await enableAudioContext();
+    
     // Cycle through available sounds
     const nextIndex = (selectedSoundIndex + 1) % audioData.audioUrls.length;
     setSelectedSoundIndex(nextIndex);
     
     // Play the selected sound
-    const audio = new Audio(audioData.audioUrls[nextIndex]);
-    audio.volume = 0.5;
-    audio.play().catch((error) => {
-      console.warn('Audio playback failed:', error);
-    });
+    await playSelectedSound();
   };
 
-  const playSelectedSound = () => {
-    const audio = new Audio(audioData.audioUrls[selectedSoundIndex]);
-    audio.volume = 0.5;
-    audio.play().catch((error) => {
+  const playSelectedSound = async () => {
+    if (!audioEnabled) {
+      console.warn('Audio not enabled - user interaction required');
+      setShowAudioHint(true);
+      return;
+    }
+
+    try {
+      const audio = new Audio(audioData.audioUrls[selectedSoundIndex]);
+      audio.volume = 0.5;
+      
+      // Preload audio for better Safari compatibility
+      audio.preload = 'auto';
+      
+      // Ensure audio context is resumed for Safari
+      if (audioContext && audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      
+      await audio.play();
+    } catch (error) {
       console.warn('Audio playback failed:', error);
-    });
+      // Try fallback method for Safari
+      try {
+        const audio = new Audio(audioData.audioUrls[selectedSoundIndex]);
+        audio.volume = 0.5;
+        audio.play();
+      } catch (fallbackError) {
+        console.warn('Fallback audio playback also failed:', fallbackError);
+      }
+    }
   };
 
   const totalDuration = sets.reduce((acc, set) => acc + set.duration_seconds, 0);
@@ -296,9 +339,33 @@ function App() {
           totalDuration={totalDuration}
           onBack={() => console.log('Back clicked')}
           onSoundSelection={handleSoundSelection}
+          audioEnabled={audioEnabled}
         />
       </div>
       
+      {/* Audio Hint Notification */}
+      {showAudioHint && (
+        <div className="fixed top-4 left-4 right-4 z-50 bg-yellow-500 text-black p-4 rounded-lg shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-yellow-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">!</span>
+              </div>
+              <div>
+                <p className="font-semibold">Audio Not Enabled</p>
+                <p className="text-sm">Tap the sound button to enable timer notifications</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowAudioHint(false)}
+              className="text-black hover:text-gray-700 font-bold text-xl"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* PWA Controls */}
       <PWAInstallButton />
       <FullscreenToggleButton />
