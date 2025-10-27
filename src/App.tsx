@@ -21,7 +21,7 @@ function App() {
   const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
-  const [showAudioHint, setShowAudioHint] = useState(false);
+  const [audioElements, setAudioElements] = useState<HTMLAudioElement[]>([]);
 
   useEffect(() => {
     loadExerciseData();
@@ -226,8 +226,19 @@ function App() {
         await ctx.resume();
       }
     }
+    
+    // Pre-create and cache all audio elements for Safari compatibility
+    if (audioElements.length === 0) {
+      const elements = audioData.audioUrls.map(url => {
+        const audio = new Audio(url);
+        audio.volume = 0.5;
+        audio.preload = 'auto';
+        return audio;
+      });
+      setAudioElements(elements);
+    }
+    
     setAudioEnabled(true);
-    setShowAudioHint(false);
   };
 
   const handleSoundSelection = async () => {
@@ -243,18 +254,16 @@ function App() {
   };
 
   const playSelectedSound = async () => {
-    if (!audioEnabled) {
-      console.warn('Audio not enabled - user interaction required');
-      setShowAudioHint(true);
+    if (!audioEnabled || audioElements.length === 0) {
+      console.warn('Audio not enabled or elements not cached');
       return;
     }
 
     try {
-      const audio = new Audio(audioData.audioUrls[selectedSoundIndex]);
-      audio.volume = 0.5;
+      const audio = audioElements[selectedSoundIndex];
       
-      // Preload audio for better Safari compatibility
-      audio.preload = 'auto';
+      // Reset audio to beginning for replay
+      audio.currentTime = 0;
       
       // Ensure audio context is resumed for Safari
       if (audioContext && audioContext.state === 'suspended') {
@@ -339,33 +348,9 @@ function App() {
           totalDuration={totalDuration}
           onBack={() => console.log('Back clicked')}
           onSoundSelection={handleSoundSelection}
-          audioEnabled={audioEnabled}
         />
       </div>
       
-      {/* Audio Hint Notification */}
-      {showAudioHint && (
-        <div className="fixed top-4 left-4 right-4 z-50 bg-yellow-500 text-black p-4 rounded-lg shadow-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-yellow-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">!</span>
-              </div>
-              <div>
-                <p className="font-semibold">Audio Not Enabled</p>
-                <p className="text-sm">Tap the sound button to enable timer notifications</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowAudioHint(false)}
-              className="text-black hover:text-gray-700 font-bold text-xl"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* PWA Controls */}
       <PWAInstallButton />
       <FullscreenToggleButton />

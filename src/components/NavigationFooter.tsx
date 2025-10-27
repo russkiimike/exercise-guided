@@ -6,10 +6,9 @@ type NavigationFooterProps = {
   totalDuration: number; // Keep for backward compatibility but not used
   onBack: () => void;
   onSoundSelection: () => void;
-  audioEnabled?: boolean;
 };
 
-export function NavigationFooter({ onBack, onSoundSelection, audioEnabled = false }: NavigationFooterProps) {
+export function NavigationFooter({ onBack, onSoundSelection }: NavigationFooterProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -38,11 +37,8 @@ export function NavigationFooter({ onBack, onSoundSelection, audioEnabled = fals
       </div>
 
         <button 
-          className={`w-20 h-20 rounded-full transition-colors flex items-center justify-center shadow-lg ${
-            audioEnabled ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'
-          }`}
+          className="w-20 h-20 rounded-full bg-blue-500 transition-colors flex items-center justify-center shadow-lg"
           onClick={onSoundSelection}
-          title={audioEnabled ? 'Audio enabled - tap to change sound' : 'Tap to enable audio for timer notifications'}
         >
         <BlobCharacter size="100vw" eyePosition={{ y: 60, spacing: 20, rx: 15, ry: 5, pupilRx: 10, pupilRy: 6}} />
         </button>
