@@ -8,7 +8,7 @@ import { NavigationFooter } from './components/NavigationFooter';
 import { registerServiceWorker } from './utils/pwa';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { FullscreenToggleButton } from './components/FullscreenToggleButton';
-import audioData from './data/audio.json';
+import { useAudioPlayback } from './hooks/useAudioPlayback';
 
 function App() {
   const [exercise, setExercise] = useState<Exercise | null>(null);
@@ -18,10 +18,7 @@ function App() {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [audioEnabled, setAudioEnabled] = useState(false);
-  const [audioElements, setAudioElements] = useState<HTMLAudioElement[]>([]);
+  const { enableAudioContext, playSelectedSound, handleSoundSelection } = useAudioPlayback();
 
   useEffect(() => {
     loadExerciseData();
@@ -213,74 +210,6 @@ function App() {
       console.log('Exercise updated, new sets:', normalizedSets.length);
     } else {
       console.log('No new exercise found');
-    }
-  };
-
-  const enableAudioContext = async () => {
-    if (!audioContext) {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      setAudioContext(ctx);
-      
-      // Resume context if suspended (required for Safari)
-      if (ctx.state === 'suspended') {
-        await ctx.resume();
-      }
-    }
-    
-    // Pre-create and cache all audio elements for Safari compatibility
-    if (audioElements.length === 0) {
-      const elements = audioData.audioUrls.map(url => {
-        const audio = new Audio(url);
-        audio.volume = 0.5;
-        audio.preload = 'auto';
-        return audio;
-      });
-      setAudioElements(elements);
-    }
-    
-    setAudioEnabled(true);
-  };
-
-  const handleSoundSelection = async () => {
-    // Enable audio context on first user interaction
-    await enableAudioContext();
-    
-    // Cycle through available sounds
-    const nextIndex = (selectedSoundIndex + 1) % audioData.audioUrls.length;
-    setSelectedSoundIndex(nextIndex);
-    
-    // Play the selected sound
-    await playSelectedSound();
-  };
-
-  const playSelectedSound = async () => {
-    if (!audioEnabled || audioElements.length === 0) {
-      console.warn('Audio not enabled or elements not cached');
-      return;
-    }
-
-    try {
-      const audio = audioElements[selectedSoundIndex];
-      
-      // Reset audio to beginning for replay
-      audio.currentTime = 0;
-      
-      // Ensure audio context is resumed for Safari
-      if (audioContext && audioContext.state === 'suspended') {
-        await audioContext.resume();
-      }
-      
-      await audio.play();
-    } catch (error) {
-      console.warn('Audio playback failed:', error);
-      // Try fallback method for Safari
-      try {
-        const audio = new Audio(audioData.audioUrls[selectedSoundIndex]);
-        audio.volume = 0.5;
-        audio.play();
-      } catch (fallbackError) {
-        console.warn('Fallback audio playback also failed:', fallbackError);
-      }
     }
   };
 
