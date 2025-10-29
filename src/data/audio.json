@@ -1,4 +1,17 @@
+
 {
+  "audioUrls": [
+      "https://dacg2ej81dyxw.cloudfront.net/assets/adinterface/good_girl/extra_rep_french.mp3",
+      "https://dacg2ej81dyxw.cloudfront.net/assets/adinterface/good_girl/frech_girl.mp3",
+      "https://dacg2ej81dyxw.cloudfront.net/assets/adinterface/good_girl/frech_good2.mp3",
+      "https://dacg2ej81dyxw.cloudfront.net/assets/adinterface/good_girl/goodgilr2.mp3",
+      "https://dacg2ej81dyxw.cloudfront.net/assets/adinterface/good_girl/goodgilr3.mp3",
+      "https://dacg2ej81dyxw.cloudfront.net/assets/adinterface/good_girl/goodgirl.mp3",
+      "https://dacg2ej81dyxw.cloudfront.net/assets/adinterface/good_girl/goodgirl3.mp3"
+  ],
+}
+
+/*{
   "audioUrls": [
     "https://gymstreak-asset-storage.s3.us-east-2.amazonaws.com/assets/adinterface/1min.mp3",
     "https://gymstreak-asset-storage.s3.us-east-2.amazonaws.com/assets/adinterface/1min_2.mp3",
@@ -8,4 +21,4 @@
     "https://gymstreak-asset-storage.s3.us-east-2.amazonaws.com/assets/adinterface/1min_6.mp3"
     
   ]
-}
+}*/

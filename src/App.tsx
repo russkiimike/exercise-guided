@@ -150,6 +150,9 @@ function App() {
   const handleDismissRestTimer = async () => {
     if (!currentSetData) return;
     
+    // Ensure audio context is enabled before playing
+    await enableAudioContext();
+    
     // Play selected sound when timer is dismissed
     await playSelectedSound();
     
@@ -169,6 +172,9 @@ function App() {
 
   const handleRestTimerComplete = async () => {
     if (!currentSetData) return;
+    
+    // Ensure audio context is enabled before playing
+    await enableAudioContext();
     
     // Play selected sound when timer completes
     await playSelectedSound();

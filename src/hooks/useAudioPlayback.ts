@@ -17,9 +17,11 @@ interface UseAudioPlaybackReturn {
 export const useAudioPlayback = (): UseAudioPlaybackReturn => {
   const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
   const [audioUrls, setAudioUrls] = useState<string[]>([]);
+  const audioUrlsRef = useRef<string[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioEnabledRef = useRef(false);
   const audioElementsRef = useRef<HTMLAudioElement[]>([]);
+  const currentlyPlayingRef = useRef<HTMLAudioElement | null>(null);
 
   // Fetch external audio configuration on mount
   useEffect(() => {
@@ -35,6 +37,7 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         
         if (config.audioUrls && Array.isArray(config.audioUrls)) {
           setAudioUrls(config.audioUrls);
+          audioUrlsRef.current = config.audioUrls;
         } else {
           throw new Error('Invalid audio config format');
         }
@@ -42,10 +45,22 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         console.warn('Failed to fetch external audio config, using local fallback:', error);
         // Fallback to local audio data
         setAudioUrls(audioData.audioUrls);
+        audioUrlsRef.current = audioData.audioUrls;
       }
     };
 
     fetchAudioConfig();
+  }, []);
+
+  // Cleanup: stop any playing audio when component unmounts
+  useEffect(() => {
+    return () => {
+      if (currentlyPlayingRef.current) {
+        currentlyPlayingRef.current.pause();
+        currentlyPlayingRef.current.currentTime = 0;
+        currentlyPlayingRef.current = null;
+      }
+    };
   }, []);
 
   const enableAudioContext = useCallback(async () => {
@@ -74,9 +89,47 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
   }, [audioUrls]);
 
   const playSelectedSound = useCallback(async () => {
-    if (!audioEnabledRef.current || audioElementsRef.current.length === 0) {
-      console.warn('Audio not enabled or elements not cached');
+    // Wait for audio URLs to be loaded if not ready yet
+    if (audioUrlsRef.current.length === 0) {
+      console.warn('Audio URLs not loaded yet, waiting...');
+      // Wait up to 5 seconds for URLs to load
+      let attempts = 0;
+      while (audioUrlsRef.current.length === 0 && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      if (audioUrlsRef.current.length === 0) {
+        console.warn('Audio URLs failed to load');
+        return;
+      }
+    }
+
+    // Enable audio context if not already enabled
+    if (!audioEnabledRef.current) {
+      await enableAudioContext();
+    }
+
+    if (audioElementsRef.current.length === 0 && audioUrlsRef.current.length > 0) {
+      // Create audio elements if they don't exist
+      const elements = audioUrlsRef.current.map(url => {
+        const audio = new Audio(url);
+        audio.volume = 0.5;
+        audio.preload = 'auto';
+        return audio;
+      });
+      audioElementsRef.current = elements;
+    }
+
+    if (audioElementsRef.current.length === 0) {
+      console.warn('Audio elements not available');
       return;
+    }
+
+    // Stop any currently playing audio
+    if (currentlyPlayingRef.current) {
+      currentlyPlayingRef.current.pause();
+      currentlyPlayingRef.current.currentTime = 0;
+      currentlyPlayingRef.current = null;
     }
 
     try {
@@ -91,20 +144,29 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       }
       
       await audio.play();
+      currentlyPlayingRef.current = audio;
     } catch (error) {
       console.warn('Audio playback failed:', error);
       // Try fallback method for Safari
-      if (audioUrls.length > 0) {
+      if (audioUrlsRef.current.length > 0) {
         try {
-          const audio = new Audio(audioUrls[selectedSoundIndex]);
+          // Stop any currently playing audio
+          if (currentlyPlayingRef.current) {
+            currentlyPlayingRef.current.pause();
+            currentlyPlayingRef.current.currentTime = 0;
+            currentlyPlayingRef.current = null;
+          }
+          
+          const audio = new Audio(audioUrlsRef.current[selectedSoundIndex]);
           audio.volume = 0.5;
-          audio.play();
+          await audio.play();
+          currentlyPlayingRef.current = audio;
         } catch (fallbackError) {
           console.warn('Fallback audio playback also failed:', fallbackError);
         }
       }
     }
-  }, [selectedSoundIndex, audioUrls]);
+  }, [selectedSoundIndex, enableAudioContext]);
 
   const handleSoundSelection = useCallback(async () => {
     // Enable audio context on first user interaction
@@ -120,6 +182,13 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
     setSelectedSoundIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % audioUrls.length;
       
+      // Stop any currently playing audio
+      if (currentlyPlayingRef.current) {
+        currentlyPlayingRef.current.pause();
+        currentlyPlayingRef.current.currentTime = 0;
+        currentlyPlayingRef.current = null;
+      }
+      
       // Play the sound with the new index immediately
       if (audioEnabledRef.current && audioElementsRef.current.length > 0) {
         const audio = audioElementsRef.current[nextIndex];
@@ -127,12 +196,23 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
           audioContextRef.current.resume();
         }
-        audio.play().catch((error) => {
+        audio.play().then(() => {
+          currentlyPlayingRef.current = audio;
+        }).catch((error) => {
           console.warn('Audio playback failed:', error);
           try {
+            // Stop any currently playing audio before fallback
+            if (currentlyPlayingRef.current) {
+              currentlyPlayingRef.current.pause();
+              currentlyPlayingRef.current.currentTime = 0;
+              currentlyPlayingRef.current = null;
+            }
+            
             const fallbackAudio = new Audio(audioUrls[nextIndex]);
             fallbackAudio.volume = 0.5;
-            fallbackAudio.play();
+            fallbackAudio.play().then(() => {
+              currentlyPlayingRef.current = fallbackAudio;
+            });
           } catch (fallbackError) {
             console.warn('Fallback audio playback also failed:', fallbackError);
           }
