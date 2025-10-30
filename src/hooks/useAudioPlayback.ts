@@ -6,17 +6,21 @@ const AUDIO_CONFIG_URL = import.meta.env.VITE_AUDIO_CONFIG_URL || 'https://gymst
 
 interface AudioConfig {
   audioUrls: string[];
+  audioUrls2?: string[];
 }
 
 interface UseAudioPlaybackReturn {
   enableAudioContext: () => Promise<void>;
   playSelectedSound: () => Promise<void>;
   handleSoundSelection: () => Promise<void>;
+  toggleAudioSet: () => Promise<void>;
 }
 
 export const useAudioPlayback = (): UseAudioPlaybackReturn => {
   const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
   const [audioUrls, setAudioUrls] = useState<string[]>([]);
+  const [secondaryAudioUrls, setSecondaryAudioUrls] = useState<string[]>([]);
+  const [isUsingPrimarySet, setIsUsingPrimarySet] = useState(true);
   const audioUrlsRef = useRef<string[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioEnabledRef = useRef(false);
@@ -37,6 +41,8 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         
         if (config.audioUrls && Array.isArray(config.audioUrls)) {
           setAudioUrls(config.audioUrls);
+          setSecondaryAudioUrls(Array.isArray(config.audioUrls2) ? config.audioUrls2 : []);
+          setIsUsingPrimarySet(true);
           audioUrlsRef.current = config.audioUrls;
         } else {
           throw new Error('Invalid audio config format');
@@ -44,8 +50,11 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       } catch (error) {
         console.warn('Failed to fetch external audio config, using local fallback:', error);
         // Fallback to local audio data
-        setAudioUrls(audioData.audioUrls);
-        audioUrlsRef.current = audioData.audioUrls;
+        setAudioUrls(audioData.audioUrls || []);
+        // @ts-expect-error - optional property in local JSON
+        setSecondaryAudioUrls(audioData.audioUrls2 || []);
+        setIsUsingPrimarySet(true);
+        audioUrlsRef.current = audioData.audioUrls || [];
       }
     };
 
@@ -223,10 +232,51 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
     });
   }, [enableAudioContext, audioUrls]);
 
+  const toggleAudioSet = useCallback(async () => {
+    if (currentlyPlayingRef.current) {
+      currentlyPlayingRef.current.pause();
+      currentlyPlayingRef.current.currentTime = 0;
+      currentlyPlayingRef.current = null;
+    }
+
+    const nextIsPrimary = !isUsingPrimarySet;
+    const nextList = nextIsPrimary ? audioUrls : secondaryAudioUrls;
+
+    if (!nextIsPrimary && secondaryAudioUrls.length === 0) {
+      console.warn('Secondary audio list is empty; cannot toggle');
+      return;
+    }
+
+    audioUrlsRef.current = nextList;
+    audioElementsRef.current = nextList.map(url => {
+      const audio = new Audio(url);
+      audio.volume = 0.5;
+      audio.preload = 'auto';
+      return audio;
+    });
+
+    setSelectedSoundIndex(0);
+    setIsUsingPrimarySet(nextIsPrimary);
+
+    if (audioEnabledRef.current && audioElementsRef.current.length > 0) {
+      try {
+        const audio = audioElementsRef.current[0];
+        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+        await audio.play();
+        currentlyPlayingRef.current = audio;
+      } catch (e) {
+        console.warn('Failed to play after toggling audio set:', e);
+      }
+    }
+  }, [isUsingPrimarySet, audioUrls, secondaryAudioUrls]);
+
   return {
     enableAudioContext,
     playSelectedSound,
-    handleSoundSelection
+    handleSoundSelection,
+    toggleAudioSet
   };
 };
 

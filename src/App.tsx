@@ -18,7 +18,7 @@ function App() {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { enableAudioContext, playSelectedSound, handleSoundSelection } = useAudioPlayback();
+  const { enableAudioContext, playSelectedSound, handleSoundSelection, toggleAudioSet } = useAudioPlayback();
 
   useEffect(() => {
     loadExerciseData();
@@ -239,7 +239,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#2d2e67] flex flex-col">
-      <ExerciseHeader onNewExercise={handleNewExercise} />
+      <ExerciseHeader onNewExercise={handleNewExercise} onToggleAudioSet={toggleAudioSet} />
 
       <div className="flex-1 flex flex-col justify-between pb-6">
         <div className="space-y-4">
