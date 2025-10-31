@@ -22,6 +22,8 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
   const [secondaryAudioUrls, setSecondaryAudioUrls] = useState<string[]>([]);
   const [isUsingPrimarySet, setIsUsingPrimarySet] = useState(true);
   const audioUrlsRef = useRef<string[]>([]);
+  const primaryAudioUrlsRef = useRef<string[]>([]);
+  const secondaryAudioUrlsRef = useRef<string[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioEnabledRef = useRef(false);
   const audioElementsRef = useRef<HTMLAudioElement[]>([]);
@@ -31,6 +33,7 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
   useEffect(() => {
     const fetchAudioConfig = async () => {
       try {
+        console.log('[Audio] Fetching audio config from', AUDIO_CONFIG_URL);
         const response = await fetch(AUDIO_CONFIG_URL);
         
         if (!response.ok) {
@@ -43,18 +46,30 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
           setAudioUrls(config.audioUrls);
           setSecondaryAudioUrls(Array.isArray(config.audioUrls2) ? config.audioUrls2 : []);
           setIsUsingPrimarySet(true);
+          primaryAudioUrlsRef.current = config.audioUrls;
+          secondaryAudioUrlsRef.current = Array.isArray(config.audioUrls2) ? config.audioUrls2 : [];
           audioUrlsRef.current = config.audioUrls;
+          console.log('[Audio] Loaded audio config', {
+            primaryCount: config.audioUrls.length,
+            secondaryCount: Array.isArray(config.audioUrls2) ? config.audioUrls2.length : 0
+          });
         } else {
           throw new Error('Invalid audio config format');
         }
       } catch (error) {
-        console.warn('Failed to fetch external audio config, using local fallback:', error);
+        console.warn('[Audio] Failed to fetch external audio config, using local fallback:', error);
         // Fallback to local audio data
         setAudioUrls(audioData.audioUrls || []);
         // @ts-expect-error - optional property in local JSON
         setSecondaryAudioUrls(audioData.audioUrls2 || []);
         setIsUsingPrimarySet(true);
+        primaryAudioUrlsRef.current = audioData.audioUrls || [];
+        secondaryAudioUrlsRef.current = audioData.audioUrls2 || [];
         audioUrlsRef.current = audioData.audioUrls || [];
+        console.log('[Audio] Using local audio config', {
+          primaryCount: (audioData.audioUrls || []).length,
+          secondaryCount: (audioData as any).audioUrls2 ? (audioData as any).audioUrls2.length : 0
+        });
       }
     };
 
@@ -92,6 +107,7 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         return audio;
       });
       audioElementsRef.current = elements;
+      console.log('[Audio] Precreated audio elements for primary list:', elements.length);
     }
     
     audioEnabledRef.current = true;
@@ -154,6 +170,10 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       
       await audio.play();
       currentlyPlayingRef.current = audio;
+      console.log('[Audio] Playing', {
+        index: selectedSoundIndex,
+        url: audio.src
+      });
     } catch (error) {
       console.warn('Audio playback failed:', error);
       // Try fallback method for Safari
@@ -170,6 +190,10 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
           audio.volume = 0.5;
           await audio.play();
           currentlyPlayingRef.current = audio;
+          console.log('[Audio] Playing (fallback)', {
+            index: selectedSoundIndex,
+            url: audio.src
+          });
         } catch (fallbackError) {
           console.warn('Fallback audio playback also failed:', fallbackError);
         }
@@ -182,14 +206,14 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
     await enableAudioContext();
     
     // Wait for audio URLs to be loaded
-    if (audioUrls.length === 0) {
+    if (audioUrlsRef.current.length === 0) {
       console.warn('Audio URLs not loaded yet');
       return;
     }
     
-    // Cycle through available sounds
+    // Cycle through available sounds using the current active list
     setSelectedSoundIndex((prevIndex) => {
-      const nextIndex = (prevIndex + 1) % audioUrls.length;
+      const nextIndex = (prevIndex + 1) % audioUrlsRef.current.length;
       
       // Stop any currently playing audio
       if (currentlyPlayingRef.current) {
@@ -207,6 +231,10 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         }
         audio.play().then(() => {
           currentlyPlayingRef.current = audio;
+          console.log('[Audio] Playing (selection)', {
+            index: nextIndex,
+            url: audio.src
+          });
         }).catch((error) => {
           console.warn('Audio playback failed:', error);
           try {
@@ -217,10 +245,14 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
               currentlyPlayingRef.current = null;
             }
             
-            const fallbackAudio = new Audio(audioUrls[nextIndex]);
+            const fallbackAudio = new Audio(audioUrlsRef.current[nextIndex]);
             fallbackAudio.volume = 0.5;
             fallbackAudio.play().then(() => {
               currentlyPlayingRef.current = fallbackAudio;
+              console.log('[Audio] Playing (selection fallback)', {
+                index: nextIndex,
+                url: fallbackAudio.src
+              });
             });
           } catch (fallbackError) {
             console.warn('Fallback audio playback also failed:', fallbackError);
@@ -230,7 +262,7 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       
       return nextIndex;
     });
-  }, [enableAudioContext, audioUrls]);
+  }, [enableAudioContext]);
 
   const toggleAudioSet = useCallback(async () => {
     if (currentlyPlayingRef.current) {
@@ -240,14 +272,28 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
     }
 
     const nextIsPrimary = !isUsingPrimarySet;
-    const nextList = nextIsPrimary ? audioUrls : secondaryAudioUrls;
+    // Use refs to get the most current values
+    const nextList = nextIsPrimary ? primaryAudioUrlsRef.current : secondaryAudioUrlsRef.current;
 
-    if (!nextIsPrimary && secondaryAudioUrls.length === 0) {
+    if (!nextIsPrimary && secondaryAudioUrlsRef.current.length === 0) {
       console.warn('Secondary audio list is empty; cannot toggle');
       return;
     }
 
+    if (nextList.length === 0) {
+      console.warn('Selected audio list is empty; cannot toggle');
+      return;
+    }
+
+    console.log('[Audio] Toggling audio set', {
+      to: nextIsPrimary ? 'primary' : 'secondary',
+      count: nextList.length
+    });
+
+    // Update the active list reference
     audioUrlsRef.current = nextList;
+    
+    // Recreate audio elements with the new list
     audioElementsRef.current = nextList.map(url => {
       const audio = new Audio(url);
       audio.volume = 0.5;
@@ -255,9 +301,11 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       return audio;
     });
 
+    // Reset to first sound in the new list
     setSelectedSoundIndex(0);
     setIsUsingPrimarySet(nextIsPrimary);
 
+    // Play the first sound from the new list
     if (audioEnabledRef.current && audioElementsRef.current.length > 0) {
       try {
         const audio = audioElementsRef.current[0];
@@ -266,11 +314,15 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         }
         await audio.play();
         currentlyPlayingRef.current = audio;
+        console.log('[Audio] Playing first after toggle', {
+          index: 0,
+          url: audio.src
+        });
       } catch (e) {
         console.warn('Failed to play after toggling audio set:', e);
       }
     }
-  }, [isUsingPrimarySet, audioUrls, secondaryAudioUrls]);
+  }, [isUsingPrimarySet]);
 
   return {
     enableAudioContext,

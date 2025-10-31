@@ -37,10 +37,10 @@ export function NavigationFooter({ onBack, onSoundSelection }: NavigationFooterP
       </div>
 
         <button 
-          className="w-20 h-20 rounded-full bg-blue-500 transition-colors flex items-center justify-center shadow-lg"
+          className="w-20 h-20 rounded-full transition-colors flex items-center justify-center shadow-lg"
           onClick={onSoundSelection}
         >
-        <BlobCharacter size="100vw" eyePosition={{ y: 60, spacing: 20, rx: 15, ry: 5, pupilRx: 10, pupilRy: 6}} />
+        <BlobCharacter/>
         </button>
         
     </footer>
