@@ -19,7 +19,6 @@ interface UseAudioPlaybackReturn {
 export const useAudioPlayback = (): UseAudioPlaybackReturn => {
   const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
   const [audioUrls, setAudioUrls] = useState<string[]>([]);
-  const [secondaryAudioUrls, setSecondaryAudioUrls] = useState<string[]>([]);
   const [isUsingPrimarySet, setIsUsingPrimarySet] = useState(true);
   const audioUrlsRef = useRef<string[]>([]);
   const primaryAudioUrlsRef = useRef<string[]>([]);
@@ -44,7 +43,6 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         
         if (config.audioUrls && Array.isArray(config.audioUrls)) {
           setAudioUrls(config.audioUrls);
-          setSecondaryAudioUrls(Array.isArray(config.audioUrls2) ? config.audioUrls2 : []);
           setIsUsingPrimarySet(true);
           primaryAudioUrlsRef.current = config.audioUrls;
           secondaryAudioUrlsRef.current = Array.isArray(config.audioUrls2) ? config.audioUrls2 : [];
@@ -60,11 +58,9 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         console.warn('[Audio] Failed to fetch external audio config, using local fallback:', error);
         // Fallback to local audio data
         setAudioUrls(audioData.audioUrls || []);
-        // @ts-expect-error - optional property in local JSON
-        setSecondaryAudioUrls(audioData.audioUrls2 || []);
         setIsUsingPrimarySet(true);
         primaryAudioUrlsRef.current = audioData.audioUrls || [];
-        secondaryAudioUrlsRef.current = audioData.audioUrls2 || [];
+        secondaryAudioUrlsRef.current = (audioData as any).audioUrls2 || [];
         audioUrlsRef.current = audioData.audioUrls || [];
         console.log('[Audio] Using local audio config', {
           primaryCount: (audioData.audioUrls || []).length,
@@ -158,7 +154,12 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
     }
 
     try {
-      const audio = audioElementsRef.current[selectedSoundIndex];
+      // Clamp index to current active list length to avoid race when toggling sets
+      const listLength = audioElementsRef.current.length;
+      const safeIndex = listLength > 0
+        ? Math.max(0, Math.min(selectedSoundIndex, listLength - 1))
+        : 0;
+      const audio = audioElementsRef.current[safeIndex];
       
       // Reset audio to beginning for replay
       audio.currentTime = 0;
@@ -171,7 +172,7 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       await audio.play();
       currentlyPlayingRef.current = audio;
       console.log('[Audio] Playing', {
-        index: selectedSoundIndex,
+        index: safeIndex,
         url: audio.src
       });
     } catch (error) {
@@ -186,12 +187,17 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
             currentlyPlayingRef.current = null;
           }
           
-          const audio = new Audio(audioUrlsRef.current[selectedSoundIndex]);
+          // Clamp again for fallback
+          const listLength = audioUrlsRef.current.length;
+          const safeIndex = listLength > 0
+            ? Math.max(0, Math.min(selectedSoundIndex, listLength - 1))
+            : 0;
+          const audio = new Audio(audioUrlsRef.current[safeIndex]);
           audio.volume = 0.5;
           await audio.play();
           currentlyPlayingRef.current = audio;
           console.log('[Audio] Playing (fallback)', {
-            index: selectedSoundIndex,
+            index: safeIndex,
             url: audio.src
           });
         } catch (fallbackError) {

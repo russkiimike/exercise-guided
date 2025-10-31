@@ -1,0 +1,23 @@
+{
+  "exercises": {
+    "Forearm Side Plank Twists": "前臂侧平板扭转",
+    "Lateral Plank Walks": "横向平板行走",
+    "Plank Hops": "平板跳跃",
+    "Plank To Jump Squat": "平板到跳蹲",
+    "Plank To Pushups": "平板到俯卧撑",
+    "Plank Ups": "平板起身",
+    "Plank With Reach Out": "平板伸展",
+    "Plank With T Rotations": "平板T型旋转",
+    "Plank": "平板支撑",
+    "Reverse Plank": "反向平板",
+    "Side Plank Lat Pull": "侧平板拉背",
+    "Side Plank Leg Pull": "侧平板抬腿",
+    "Side Plank Rotation With Kicks": "侧平板旋转踢腿",
+    "Side Plank Star": "侧平板星形",
+    "Star Planks": "星形平板",
+    "Straight Arm Plank Jacks": "直臂平板开合跳"
+  },
+  "labels": {
+    "restTime": "休息时间"
+  }
+}

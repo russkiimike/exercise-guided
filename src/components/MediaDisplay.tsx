@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 type MediaDisplayProps = {
   mediaUrl: string | null;
   mediaType: 'image' | 'video';
@@ -5,6 +7,12 @@ type MediaDisplayProps = {
 };
 
 export function MediaDisplay({ mediaUrl, mediaType, exerciseName }: MediaDisplayProps) {
+  const { t } = useTranslation();
+  
+  // Translate exercise name, fallback to original if translation not found
+  const translationKey = `exercises.${exerciseName}`;
+  const translatedName = t(translationKey) !== translationKey ? t(translationKey) : exerciseName;
+
   return (
     <div className="flex flex-col items-center gap-6 px-6">
       <div className="relative w-52 h-52">
@@ -24,7 +32,7 @@ export function MediaDisplay({ mediaUrl, mediaType, exerciseName }: MediaDisplay
             ) : (
               <img
                 src={mediaUrl}
-                alt={exerciseName}
+                alt={translatedName}
                 className="w-full h-full object-cover"
               />
             )
@@ -37,7 +45,7 @@ export function MediaDisplay({ mediaUrl, mediaType, exerciseName }: MediaDisplay
       </div>
 
       <div className="flex items-center justify-between w-full px-2">
-        <h2 className="text-2xl font-semibold text-white">{exerciseName}</h2>
+        <h2 className="text-2xl font-semibold text-white">{translatedName}</h2>
         <button className="w-10 h-10 rounded-full bg-[#6d6ec0] backdrop-blur-sm flex items-center justify-center">
           <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
             <circle cx="10" cy="5" r="1.5" />

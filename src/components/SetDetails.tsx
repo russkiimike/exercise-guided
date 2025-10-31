@@ -1,5 +1,6 @@
 import { Check, Play, Timer } from 'lucide-react';
 import { RestTimer } from './RestTimer';
+import { useTranslation } from 'react-i18next';
 
 type SetDetailsProps = {
   setNumber: number;
@@ -32,6 +33,8 @@ export function SetDetails({
   onDismissRestTimer,
   onRestTimerComplete,
 }: SetDetailsProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="px-4">
       <div className={`backdrop-blur-sm rounded-2xl py-1 transition-all duration-300 ${
@@ -119,7 +122,7 @@ export function SetDetails({
           <div className="flex items-center justify-between p-2 mb-1">
             <div className="flex items-center">
               <Timer className="w-4 h-4 text-white" />
-              <h3 className="text-white text-lg font-semibold">Rest time</h3>
+              <h3 className="text-white text-lg font-semibold">{t('labels.restTime')}</h3>
             </div>
             <span className="text-white text-m font-medium">1min</span>
           </div>

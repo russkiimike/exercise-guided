@@ -1,0 +1,23 @@
+{
+  "exercises": {
+    "Forearm Side Plank Twists": "Forearm Side Plank Twists",
+    "Lateral Plank Walks": "Lateral Plank Walks",
+    "Plank Hops": "Plank Hops",
+    "Plank To Jump Squat": "Plank To Jump Squat",
+    "Plank To Pushups": "Plank To Pushups",
+    "Plank Ups": "Plank Ups",
+    "Plank With Reach Out": "Plank With Reach Out",
+    "Plank With T Rotations": "Plank With T Rotations",
+    "Plank": "Plank",
+    "Reverse Plank": "Reverse Plank",
+    "Side Plank Lat Pull": "Side Plank Lat Pull",
+    "Side Plank Leg Pull": "Side Plank Leg Pull",
+    "Side Plank Rotation With Kicks": "Side Plank Rotation With Kicks",
+    "Side Plank Star": "Side Plank Star",
+    "Star Planks": "Star Planks",
+    "Straight Arm Plank Jacks": "Straight Arm Plank Jacks"
+  },
+  "labels": {
+    "restTime": "Rest time"
+  }
+}
