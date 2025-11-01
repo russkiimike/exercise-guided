@@ -8,7 +8,7 @@ type NavigationFooterProps = {
   onSoundSelection: () => void;
 };
 
-export function NavigationFooter({ onBack, onSoundSelection }: NavigationFooterProps) {
+export function NavigationFooter({ onBack, onSoundSelection, isAudioPlaying = false }: NavigationFooterProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export function NavigationFooter({ onBack, onSoundSelection }: NavigationFooterP
           className="w-20 h-20 rounded-full transition-colors flex items-center justify-center shadow-lg"
           onClick={onSoundSelection}
         >
-        <BlobCharacter/>
+        <BlobCharacter isPlaying={isAudioPlaying} />
         </button>
         
     </footer>

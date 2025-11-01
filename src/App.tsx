@@ -18,7 +18,7 @@ function App() {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { enableAudioContext, playSelectedSound, handleSoundSelection, toggleAudioSet } = useAudioPlayback();
+  const { enableAudioContext, playSelectedSound, handleSoundSelection, toggleAudioSet, isPlaying } = useAudioPlayback();
 
   useEffect(() => {
     loadExerciseData();
@@ -283,6 +283,7 @@ function App() {
           totalDuration={totalDuration}
           onBack={() => console.log('Back clicked')}
           onSoundSelection={handleSoundSelection}
+          isAudioPlaying={isPlaying}
         />
       </div>
       

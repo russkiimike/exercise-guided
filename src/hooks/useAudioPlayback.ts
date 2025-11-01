@@ -14,12 +14,14 @@ interface UseAudioPlaybackReturn {
   playSelectedSound: () => Promise<void>;
   handleSoundSelection: () => Promise<void>;
   toggleAudioSet: () => Promise<void>;
+  isPlaying: boolean;
 }
 
 export const useAudioPlayback = (): UseAudioPlaybackReturn => {
   const [selectedSoundIndex, setSelectedSoundIndex] = useState(0);
   const [audioUrls, setAudioUrls] = useState<string[]>([]);
   const [isUsingPrimarySet, setIsUsingPrimarySet] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioUrlsRef = useRef<string[]>([]);
   const primaryAudioUrlsRef = useRef<string[]>([]);
   const secondaryAudioUrlsRef = useRef<string[]>([]);
@@ -151,6 +153,7 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       currentlyPlayingRef.current.pause();
       currentlyPlayingRef.current.currentTime = 0;
       currentlyPlayingRef.current = null;
+      setIsPlaying(false);
     }
 
     try {
@@ -171,10 +174,17 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
       
       await audio.play();
       currentlyPlayingRef.current = audio;
+      setIsPlaying(true);
       console.log('[Audio] Playing', {
         index: safeIndex,
         url: audio.src
       });
+      
+      // Track when audio ends
+      audio.onended = () => {
+        setIsPlaying(false);
+        currentlyPlayingRef.current = null;
+      };
     } catch (error) {
       console.warn('Audio playback failed:', error);
       // Try fallback method for Safari
@@ -196,10 +206,17 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
           audio.volume = 0.5;
           await audio.play();
           currentlyPlayingRef.current = audio;
+          setIsPlaying(true);
           console.log('[Audio] Playing (fallback)', {
             index: safeIndex,
             url: audio.src
           });
+          
+          // Track when audio ends
+          audio.onended = () => {
+            setIsPlaying(false);
+            currentlyPlayingRef.current = null;
+          };
         } catch (fallbackError) {
           console.warn('Fallback audio playback also failed:', fallbackError);
         }
@@ -226,6 +243,7 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         currentlyPlayingRef.current.pause();
         currentlyPlayingRef.current.currentTime = 0;
         currentlyPlayingRef.current = null;
+        setIsPlaying(false);
       }
       
       // Play the sound with the new index immediately
@@ -237,10 +255,17 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         }
         audio.play().then(() => {
           currentlyPlayingRef.current = audio;
+          setIsPlaying(true);
           console.log('[Audio] Playing (selection)', {
             index: nextIndex,
             url: audio.src
           });
+          
+          // Track when audio ends
+          audio.onended = () => {
+            setIsPlaying(false);
+            currentlyPlayingRef.current = null;
+          };
         }).catch((error) => {
           console.warn('Audio playback failed:', error);
           try {
@@ -255,10 +280,17 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
             fallbackAudio.volume = 0.5;
             fallbackAudio.play().then(() => {
               currentlyPlayingRef.current = fallbackAudio;
+              setIsPlaying(true);
               console.log('[Audio] Playing (selection fallback)', {
                 index: nextIndex,
                 url: fallbackAudio.src
               });
+              
+              // Track when audio ends
+              fallbackAudio.onended = () => {
+                setIsPlaying(false);
+                currentlyPlayingRef.current = null;
+              };
             });
           } catch (fallbackError) {
             console.warn('Fallback audio playback also failed:', fallbackError);
@@ -320,10 +352,17 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
         }
         await audio.play();
         currentlyPlayingRef.current = audio;
+        setIsPlaying(true);
         console.log('[Audio] Playing first after toggle', {
           index: 0,
           url: audio.src
         });
+        
+        // Track when audio ends
+        audio.onended = () => {
+          setIsPlaying(false);
+          currentlyPlayingRef.current = null;
+        };
       } catch (e) {
         console.warn('Failed to play after toggling audio set:', e);
       }
@@ -334,7 +373,8 @@ export const useAudioPlayback = (): UseAudioPlaybackReturn => {
     enableAudioContext,
     playSelectedSound,
     handleSoundSelection,
-    toggleAudioSet
+    toggleAudioSet,
+    isPlaying
   };
 };
 

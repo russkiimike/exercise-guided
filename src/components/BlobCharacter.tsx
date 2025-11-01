@@ -6,6 +6,7 @@ interface BlobCharacterProps {
   onClick?: () => void;
   className?: string;
   ariaLabel?: string;
+  isPlaying?: boolean;
 }
 
 function getRandomPath() {
@@ -15,20 +16,22 @@ function getRandomPath() {
   }).path;
 }
 
-function Blob(props: { image?: boolean; className?: string }) {
+function Blob(props: { isPlaying?: boolean; className?: string }) {
   const [flip, set] = useState(false);
-  const { path } = useSpring({
+  
+  const [{ path }] = useSpring(() => ({
     to: { path: getRandomPath() },
     from: { path: getRandomPath() },
     reverse: flip,
     config: {
-      duration: props.image ? 9000 : 1500
+      duration: props.isPlaying ? 200 : 1500
     },
-    onRest: (x) => {
-      x.value.path = getRandomPath();
+    onRest: (result) => {
+      // Generate new path for next animation
+      result.value.path = getRandomPath();
       set(!flip);
     }
-  });
+  }), [props.isPlaying, flip]);
 
   return (
     <animated.svg
@@ -45,7 +48,7 @@ function Blob(props: { image?: boolean; className?: string }) {
   );
 }
 
-export function BlobCharacter({ onClick, className = '', ariaLabel = 'Open assistant' }: BlobCharacterProps) {
+export function BlobCharacter({ onClick, className = '', ariaLabel = 'Open assistant', isPlaying = false }: BlobCharacterProps) {
   return (
     <div 
       aria-label={ariaLabel}
@@ -55,7 +58,7 @@ export function BlobCharacter({ onClick, className = '', ariaLabel = 'Open assis
     >
       <div className="relative w-16 h-16" style={{ filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.15))' }}>
         {/* Animated main body */}
-        <Blob className="absolute inset-0" />
+        <Blob isPlaying={isPlaying} className="absolute inset-0" />
 
         {/* Eyes (kept the same) */}
         <div className="absolute inset-0 flex items-center justify-center space-x-1">
