@@ -9,11 +9,20 @@ interface BlobCharacterProps {
   isPlaying?: boolean;
 }
 
-function getRandomPath() {
-  return blobshape({
-    growth: 8,
-    edges: 8
-  }).path;
+function getRandomPath(isPlaying?: boolean) {
+  if (isPlaying) {
+    // More lively shape when playing
+    return blobshape({
+      growth: 8,
+      edges: 15
+    }).path;
+  } else {
+    // Milder shape when not playing
+    return blobshape({
+      growth: 8,
+      edges: 6
+    }).path;
+  }
 }
 
 function Blob(props: { isPlaying?: boolean; className?: string }) {
